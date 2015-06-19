@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box; }
+
+.navbar {
+  border-radius: 0; }
+
+#home blockquote {
+  font-size: 14px;
+  font-style: italic; }
+
+#home .thumbnail {
+  height: 280px !important; }
+
+#home .btn-droppable {
+  width: 180px;
+  height: 30px;
+  padding-left: 4px; }
+
+#home .btn-draggable {
+  width: 160px; }
+
+#home div {
+  background-color: gray;
+  height: 100px;
+  width: 100px;
+  margin: 20px; }
+
+#modules ul {
+  list-style: none;
+  padding-left: 0; }

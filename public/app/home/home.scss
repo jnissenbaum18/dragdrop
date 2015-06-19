@@ -1,0 +1,15 @@
+#home {
+  blockquote {
+    font-size: 14px;
+    font-style: italic;
+  }
+  .thumbnail { height: 280px !important; }
+  .btn-droppable { width: 180px; height: 30px; padding-left: 4px; }
+  .btn-draggable { width: 160px; }
+  div {
+  	background-color: gray;
+  	height: 100px;
+  	width: 100px;
+  	margin: 20px;
+  }
+}
