@@ -3,37 +3,43 @@ app.directive('fsadraggable', ['$document', function ($document) {
 		link: function (scope, element, attr) {
 			var startX = 0, startY = 0, newX = 0, newY = 0
 
+			var data = {
+				test: 'test'
+			}
+
+			data = JSON.stringify(data)
+
 			element.css({
 				position: 'relative',
 				cursor: 'pointer'
 			})
 
-			element.bind('drag', function () {
-				console.log('drag')
+			element[0].draggable = true
+
+			element.bind('dragstart', function (event) {
+				startX = event.originalEvent.pageX - newX
+				startY = event.originalEvent.pageY - newY
+
+				event.originalEvent.dataTransfer.setData('auto', data)
 			})
 
-			element.on('mousedown', function (event){
-				event.preventDefault()
-				startX = event.pageX - newX
-				startY = event.pageY - newY
-				$document.on('mousemove', dragMouseMove)
-				$document.on('mouseup', dragMouseUp)
+			element.bind('drag', function (event) {
+
+				if (event.originalEvent.pageX === 0) {
+					// If this isn't here, pageX will reset to 0 upon end of drag
+					return;
+				}
+				
+				newX = event.originalEvent.pageX - startX
+				newY = event.originalEvent.pageY - startY
 			})
 
-			function dragMouseMove () {
-				newX = event.pageX - startX
-				newY = event.pageY - startY
+			element.bind('dragend', function (event){
 				element.css({
 					left: newX + 'px',
 					top: newY + 'px'
 				})
-			}
-
-			function dragMouseUp () {
-				$document.off('mousemove', dragMouseMove)
-				$document.off('mouseup', dragMouseUp);
-			}
-			console.log(element)
+			})
 		}
 	}
 }])
@@ -41,12 +47,12 @@ app.directive('fsadraggable', ['$document', function ($document) {
 app.directive('fsaresizeable', ['$document', function ($document) {
 	return {
 		link: function (scope, element, attr) {
-			var startHeight = element.context.offsetHeight
-			var startWidth = element.context.offsetWidth
-			var topBorder = element.context.offsetTop
-			var	bottomBorder = element.context.offsetTop + startHeight
-			var leftBorder = element.context.offsetLeft 
-			var rightBorder = element.context.offsetLeft + startWidth
+			var startHeight = element[0].offsetHeight
+			var startWidth = element[0].offsetWidth
+			var topBorder = element[0].offsetTop
+			var	bottomBorder = element[0].offsetTop + startHeight
+			var leftBorder = element[0].offsetLeft 
+			var rightBorder = element[0].offsetLeft + startWidth
 			var borderWidth = 10
 
 			element.css({
@@ -87,18 +93,15 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 app.directive('fsacontainer', ['$document', function ($document) {
 	return {
 		link: function (scope, element, attr) {
-			// element[0].draggable = true
+			var data
 			element.bind('dragover', function(e) {
 				e.preventDefault()
-            	console.log('e', e)
          	});
 
-			/* if mouseenter:
-			lookup:
-			drop event
-			drop end
-				-send data
-			check to see if fsadraggable is on the div that is being dragged in*/
+         	element.bind('drop', function (event) {
+         		data = JSON.parse(event.originalEvent.dataTransfer.getData("auto"))
+         		console.log(data)
+         	})
 		}
 	}
 }])
