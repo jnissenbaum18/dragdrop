@@ -1,9 +1,12 @@
-app.directive('fsadraggable', ['$document', function ($document) {
+app.directive('fsadraggable', function ($document) {
+
 	return {
+		restrict: 'A',
 		link: function (scope, element, attr) {
 			var startX = 0, startY = 0, newX = 0, newY = 0
 
-			var data = attr.fsadraggable
+			var data = attr.fsadata
+			console.log(data)
 
 			var JSONdata = JSON.stringify(data)
 
@@ -40,9 +43,13 @@ app.directive('fsadraggable', ['$document', function ($document) {
 					top: newY + 'px'
 				})
 			})
+		},
+		scope: {
+			fsadata: '@'
 		}
 	}
-}])
+
+})
 
 app.directive('fsaresizeable', ['$document', function ($document) {
 	return {
@@ -105,6 +112,7 @@ app.directive('fsacontainer', ['$document', function ($document) {
          			return 
          		}         		
          		data = JSON.parse(JSON.parse(event.originalEvent.dataTransfer.getData("auto")))
+         		console.log(data)
          		attr.fsacontainer.push(data)
          	})
 		}
