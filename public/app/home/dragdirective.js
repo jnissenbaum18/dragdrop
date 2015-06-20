@@ -3,11 +3,9 @@ app.directive('fsadraggable', ['$document', function ($document) {
 		link: function (scope, element, attr) {
 			var startX = 0, startY = 0, newX = 0, newY = 0
 
-			var data = {
-				test: 'test'
-			}
+			var data = attr.fsadraggable
 
-			data = JSON.stringify(data)
+			var JSONdata = JSON.stringify(data)
 
 			element.css({
 				position: 'relative',
@@ -19,8 +17,9 @@ app.directive('fsadraggable', ['$document', function ($document) {
 			element.bind('dragstart', function (event) {
 				startX = event.originalEvent.pageX - newX
 				startY = event.originalEvent.pageY - newY
-
-				event.originalEvent.dataTransfer.setData('auto', data)
+				if (data) {
+					event.originalEvent.dataTransfer.setData('auto', JSONdata)
+				}
 			})
 
 			element.bind('drag', function (event) {
@@ -35,6 +34,7 @@ app.directive('fsadraggable', ['$document', function ($document) {
 			})
 
 			element.bind('dragend', function (event){
+				
 				element.css({
 					left: newX + 'px',
 					top: newY + 'px'
@@ -47,12 +47,7 @@ app.directive('fsadraggable', ['$document', function ($document) {
 app.directive('fsaresizeable', ['$document', function ($document) {
 	return {
 		link: function (scope, element, attr) {
-			var startHeight = element[0].offsetHeight
-			var startWidth = element[0].offsetWidth
-			var topBorder = element[0].offsetTop
-			var	bottomBorder = element[0].offsetTop + startHeight
-			var leftBorder = element[0].offsetLeft 
-			var rightBorder = element[0].offsetLeft + startWidth
+			var topBorder, leftBorder, rightBorder, bottomBorder
 			var borderWidth = 10
 
 			element.css({
@@ -61,8 +56,12 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 			})
 
 			element.on('mousedown', function (event) {
-				// console.log(attr)
-				event.preventDefault()
+				// event.preventDefault()
+				
+				var topBorder = element[0].offsetTop
+				var leftBorder = element[0].offsetLeft
+				var rightBorder = element[0].offsetLeft + element[0].offsetWidth
+				var bottomBorder = element[0].offsetTop + element[0].offsetHeight
 
 				if (event.pageX < rightBorder + borderWidth && event.pageX > rightBorder - borderWidth ||
 					event.pageY < bottomBorder + borderWidth && event.pageY > bottomBorder - borderWidth) {
@@ -71,10 +70,11 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 				}				
 			})
 			function sizeMouseMove () {
-				var newHeight = event.pageY - topBorder
-				var newWidth = event.pageX - leftBorder
-				bottomBorder = topBorder + newHeight
-				rightBorder = leftBorder + newWidth
+				var newHeight = event.pageY - element[0].offsetTop
+				var newWidth = event.pageX - element[0].offsetLeft
+				 
+				bottomBorder = event.pageY
+				rightBorder = event.pageX
 				element.css({
 					height: newHeight + 'px',
 					width: newWidth + 'px'
@@ -82,6 +82,7 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 			}
 
 			function sizeMouseUp () {
+				element[0].draggable = true
 				$document.off('mousemove', sizeMouseMove)
 				$document.off('mouseup', sizeMouseUp);
 			}
@@ -94,13 +95,17 @@ app.directive('fsacontainer', ['$document', function ($document) {
 	return {
 		link: function (scope, element, attr) {
 			var data
+         	attr.fsacontainer = []
 			element.bind('dragover', function(e) {
 				e.preventDefault()
          	});
 
          	element.bind('drop', function (event) {
-         		data = JSON.parse(event.originalEvent.dataTransfer.getData("auto"))
-         		console.log(data)
+         		if (event.originalEvent.dataTransfer.getData("auto") === '') {
+         			return 
+         		}         		
+         		data = JSON.parse(JSON.parse(event.originalEvent.dataTransfer.getData("auto")))
+         		attr.fsacontainer.push(data)
          	})
 		}
 	}

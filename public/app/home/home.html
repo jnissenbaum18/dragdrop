@@ -5,10 +5,10 @@
     {{ msgFromScope }}
   </blockquote>
 
-  <div style="height: 200px; width: 500px; background-color: purple" fsacontainer>Container</div>
+  <div ng-controller="secondController" style="height: 200px; width: 500px; background-color: purple" fsacontainer ng-click="logdata()">Container</div>
   <div fsaresizeable>Grab my bottom right corner to resize!</div>
-  <div fsadraggable>Click and drag me around!</div>
-  <div fsadraggable>Resizing AND dragging...LOL</div>
+  <div fsadraggable="{{controllerdata}}">Click and drag me around!</div>
+  <div fsadraggable fsaresizeable>Resizing AND dragging...LOL</div>
 
   
 </section>
