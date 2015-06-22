@@ -11,7 +11,7 @@ app.controller('HomeController', function($scope, $timeout, $http) {
 app.controller('secondController', function ($scope, $timeout, $http, $attrs) {
 
   $scope.logdata = function () {
-    console.log('from the second controller', $attrs.fsacontainer)
+    console.log('from the second controller', $attrs.fsagetdata)
   }
   var myReceivedData = $attrs.fsacontainer
   
