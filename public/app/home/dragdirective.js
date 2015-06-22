@@ -78,9 +78,7 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 					element.css({
 						cursor: 'e-resize'
 					})
-				}
-
-				if (onBottomBorderCheck) {
+				} else if (onBottomBorderCheck) {
 					element.css({
 						cursor: 's-resize'
 					})
@@ -101,7 +99,8 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 
 
 			element.on('mousedown', function (event) {
-				event.preventDefault()
+				// event.preventDefault()
+				// element[0].draggable = false
 				
 				var topBorder = element[0].offsetTop
 				var leftBorder = element[0].offsetLeft
@@ -111,13 +110,63 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 				var onRightBorderCheck = event.pageX < rightBorder && event.pageX > rightBorder - borderWidth
 				var onBottomBorderCheck = event.pageY < bottomBorder && event.pageY > bottomBorder - borderWidth
 
-				if (onRightBorderCheck || onBottomBorderCheck) {
+				if (onRightBorderCheck && onBottomBorderCheck) {
+					element[0].draggable = false
+					$document.on('mousemove', adjustWidthHeight)
+					$document.on('mouseup', adjustMouseUp)
 
-					$document.on('mousemove', sizeMouseMove)
-					$document.on('mouseup', sizeMouseUp)
-				}				
+				}		
+
+				if (onRightBorderCheck) {
+					element[0].draggable = false
+					$document.on('mousemove', adjustWidth)
+					$document.on('mouseup', adjustMouseUp)
+					
+				}	
+
+				if (onBottomBorderCheck) {
+					element[0].draggable = false
+					$document.on('mousemove', adjustHeight)
+					$document.on('mouseup', adjustMouseUp)
+					
+				}
+
 			})
-			function sizeMouseMove () {
+
+			element.on('mouseup', function (event) {
+				// event.preventDefault()
+				element[0].draggable = true
+			})
+
+			function adjustHeight () {
+				var newHeight = event.pageY - element[0].offsetTop
+
+				if (newHeight < borderWidth) {
+					newHeight = borderWidth
+				}
+
+				bottomBorder = event.pageY
+
+				element.css({
+					height: newHeight + 'px',
+				})
+			}
+
+			function adjustWidth () {
+				var newWidth = event.pageX - element[0].offsetLeft
+
+				if (newWidth < borderWidth) {
+					newWidth = borderWidth
+				}
+
+				rightBorder = event.pageX
+
+				element.css({
+					width: newWidth + 'px',
+				})
+			}
+
+			function adjustWidthHeight () {
 				var newHeight = event.pageY - element[0].offsetTop
 				var newWidth = event.pageX - element[0].offsetLeft
 
@@ -137,10 +186,12 @@ app.directive('fsaresizeable', ['$document', function ($document) {
 				})
 			}
 
-			function sizeMouseUp () {
+			function adjustMouseUp () {
 				element[0].draggable = true
-				$document.off('mousemove', sizeMouseMove)
-				$document.off('mouseup', sizeMouseUp);
+				$document.off('mousemove', adjustWidthHeight)
+				$document.off('mousemove', adjustWidth)
+				$document.off('mousemove', adjustHeight)
+				$document.off('mouseup', adjustMouseUp);
 			}
 
 		}
@@ -172,17 +223,6 @@ app.directive('fsacontainer', ['$document', function ($document) {
 					attrs.fsagetdata.push(data)
 				}	
          	})
-
-         	scope.fsasnap = 'fsasnap' in attrs
-         	if (!!scope.fsasnap) {
-         		console.log()
-         	}
-
-         	scope.fsaclone = 'fsaclone' in attrs
-         	if (!!scope.fsasnap) {
-
-         	}
-
 		}
 	}
 }])
